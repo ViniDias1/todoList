@@ -6,8 +6,9 @@ import org.springframework.stereotype.Service;
 import com.ignis.to_do.model.Category;
 import com.ignis.to_do.repository.CategoryRepository;
 
-@Service
+import jakarta.transaction.Transactional;
 
+@Service
 public class CategoryService {
 
     @Autowired
@@ -17,9 +18,20 @@ public class CategoryService {
         return categoryRepository.save(category);
     }
 
-    public void deleteCategory(Category category) {
-        categoryRepository.delete(category);
-        
+    public Iterable<Category> getAllCategories() {
+        return categoryRepository.findAll();
+    }   
+    
+    public Category getCategory(Long id) {
+        return categoryRepository.findById(id).get();
     }
-   
+
+    public void deleteCategory(Long id) {
+        categoryRepository.deleteById(id);
+    }
+    @Transactional
+    public Category updateCategory(Long id, String name) {
+        categoryRepository.updateCategoryName(id, name);
+        return categoryRepository.findById(id).get();
+    }
 }

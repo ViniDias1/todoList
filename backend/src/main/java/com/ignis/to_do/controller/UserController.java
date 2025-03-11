@@ -19,47 +19,57 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 
 @RestController
 @RequestMapping("/users")
+// @AllArgsConstructor Analisar a necesseidade para evitar o @Autowired
+// @NoArgsConstructor
 @Tag(name = "User Controller", description = "Gerenciamento de Usuários")
-
 public class UserController {
+
     @Autowired
     private UserService userService;
 
     @PostMapping
     public UserDTO createUser(@RequestBody UserDTO userDTO) {
+
         return userService.createUser(userDTO);
     }
 
     @GetMapping("/{id}")
     public UserDTO getUserDTO(@PathVariable long id) {
+
         return userService.getUserDTO(id);
     }
 
     @GetMapping("/all")
     public Iterable<UserDTO> getAllUsers() {
+
         return userService.getAllUsers();
     }
 
     @PutMapping("/{id}")
-    public UserDTO updateUser(@PathVariable long id, @RequestBody UserDTO userDTO) {
+    public UserDTO updateUser(
+        @PathVariable long id,
+        @RequestBody UserDTO userDTO) {
+
         return userService.updateUser(id, userDTO);
     }
 
     @DeleteMapping("/{id}")
     public void deleteUser(@PathVariable long id) {
+        
         userService.deleteUser(id);
     }
 
     //TESTANDO LOGIN
     @PostMapping("/login")
     public ResponseEntity<String> login(@RequestBody UserDTO userDTO) {
-        boolean isValid = userService.validateUser(userDTO.getName(), userDTO.getEmail());
+        
+        boolean isValid = userService.validateUser(
+            userDTO.getName(), userDTO.getEmail());
         
         if (isValid) {
             return ResponseEntity.ok("Logado com sucesso");
-        } else {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Usuário não encontrado");
-        }
-}
-
+        } 
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(
+            "Usuário não encontrado");
+    }
 }

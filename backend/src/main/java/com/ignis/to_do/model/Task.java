@@ -8,11 +8,14 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
-@Entity
+@Entity(name = "task")
 @Data
-
+@AllArgsConstructor
+@NoArgsConstructor
 public class Task {
 
     @Id
@@ -28,7 +31,12 @@ public class Task {
     @JoinColumn(name = "category_id")
     private Category category;
     private Date dueDate;
-    
+
+    public Task(String title, TaskList list) {
+        this.title = title;
+        this.list = list;
+    }
+
     public Task createTask(Task task) {  
         Task newTask = new Task();
         newTask.setTitle(task.getTitle());
@@ -39,8 +47,10 @@ public class Task {
         newTask.setDueDate(task.getDueDate());
         return newTask;      
         
-    }
-    public void deleteTask(Task task) {        
+    } 
+
+    public void deleteTask(Task task) {      
+
         this.list.removeTask(task);
     }
 
@@ -56,8 +66,4 @@ public class Task {
     public void isOverdue(){
         // TO DO
     }
-    
-        
-
-
 }

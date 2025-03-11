@@ -42,3 +42,6 @@ CREATE TABLE user_favorite_board (
     FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
     FOREIGN KEY (board_id) REFERENCES board(id) ON DELETE CASCADE
 );
+
+ALTER TABLE task
+    ALTER COLUMN status DROP NOT NULL;

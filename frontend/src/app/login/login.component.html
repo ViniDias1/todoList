@@ -1,3 +1,29 @@
 <button (click)="login()">{{name}}</button>
 <button (click)="getAllUsers()">Show users</button>
 
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gmail Login Page</title>
+</head>
+<body>
+    <div class="login-container">
+        <h1>Login</h1>
+        <form action="/users/all" method="get">
+            <div class="input-group">
+                <input type="email" id="email" name="email" required>
+                <label for="email">Email</label>
+                <br>
+            </div>
+            <div class="input-group">   
+                <input type="password" id="password" name="password" required>
+                <label for="password">Password</label>
+            </div>
+            <button (click)="login()">{{name}}</button>
+        </form>
+    </div>
+</body>
+</html>

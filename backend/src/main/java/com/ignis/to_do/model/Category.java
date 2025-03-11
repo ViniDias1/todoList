@@ -7,11 +7,14 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
-@Entity
+@Entity(name = "category")
 @Data
-
+@AllArgsConstructor
+@NoArgsConstructor
 public class Category {
     
     @Id
@@ -20,5 +23,8 @@ public class Category {
     private String name;
     @OneToMany(mappedBy = "category")
     private List<Task> tasks;
-     
+
+    public Category(String name) {
+        this.name = name;
+    }
 }

@@ -1,4 +1,5 @@
 package com.ignis.to_do.model;
+
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -14,7 +15,7 @@ import lombok.NoArgsConstructor;
 
 import java.util.List;
 
-@Entity
+@Entity(name = "users")
 @Table(name = "users")
 @Data
 @AllArgsConstructor
@@ -42,6 +43,7 @@ public class User{
     }
 
     public Board createBoard(String title){
+
         Board board = new Board();
         board.setTitle(title);
         board.setOwner(this);
@@ -49,8 +51,7 @@ public class User{
     }
 
     public void deleteBoard(Board board){
+        
         this.boards.remove(board);
-    }
-
-    
+    }   
 }

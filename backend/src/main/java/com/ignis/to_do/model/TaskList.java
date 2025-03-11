@@ -9,10 +9,14 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
-@Entity
+@Entity(name = "task_list")
 @Data
+@AllArgsConstructor
+@NoArgsConstructor  
 public class TaskList {
 
     @Id
@@ -25,6 +29,11 @@ public class TaskList {
     @OneToMany(mappedBy = "list")
     private List<Task> tasks;
 
+    public TaskList(String name, Board board) {
+        this.name = name;
+        this.board = board;
+    }
+
     public Task addTask(Task task) {
         tasks.add(task); 
         return task;
@@ -33,6 +42,4 @@ public class TaskList {
     public void removeTask(Task task) {
         tasks.remove(task);
     }
-    
-
 }
