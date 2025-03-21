@@ -23,6 +23,8 @@ public class Board{
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private String title;
+    @JoinColumn(name = "favorite")
+    private boolean favorite;
     @ManyToOne
     @JoinColumn(name = "owner_id")
     private User owner;

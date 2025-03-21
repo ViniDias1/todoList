@@ -14,8 +14,11 @@ export class LoginService {
     return this.http.get(this.apiUrl+"users/all", { responseType: 'text' });
   }
 
-  login() {
-    console.log("TA AI");
-  }
+    login(user: { name: string; email: string }) {
+      
+      console.log("TA AI");
+      return this.http.post(this.apiUrl+"users/login", user, { responseType: 'text' });
+
+    }
 
 }

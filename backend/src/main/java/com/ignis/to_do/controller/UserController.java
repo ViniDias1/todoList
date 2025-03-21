@@ -1,6 +1,5 @@
 package com.ignis.to_do.controller;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -11,65 +10,73 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-
 import com.ignis.to_do.dto.UserDTO;
 import com.ignis.to_do.service.UserService;
+import com.ignis.to_do.validator.UserValidator;
 
 import io.swagger.v3.oas.annotations.tags.Tag;
 
 @RestController
 @RequestMapping("/users")
-// @AllArgsConstructor Analisar a necesseidade para evitar o @Autowired
-// @NoArgsConstructor
 @Tag(name = "User Controller", description = "Gerenciamento de Usuários")
 public class UserController {
 
-    @Autowired
-    private UserService userService;
+    
+    private final UserService userService;
+    private final UserValidator userValidator;
 
-    @PostMapping
-    public UserDTO createUser(@RequestBody UserDTO userDTO) {
-
-        return userService.createUser(userDTO);
+    public UserController(UserService userService, UserValidator userValidator) {
+        this.userValidator = userValidator;
+        this.userService = userService;
     }
 
-    @GetMapping("/{id}")
-    public UserDTO getUserDTO(@PathVariable long id) {
-
-        return userService.getUserDTO(id);
-    }
-
-    @GetMapping("/all")
-    public Iterable<UserDTO> getAllUsers() {
-
-        return userService.getAllUsers();
-    }
-
-    @PutMapping("/{id}")
-    public UserDTO updateUser(
-        @PathVariable long id,
-        @RequestBody UserDTO userDTO) {
-
-        return userService.updateUser(id, userDTO);
-    }
-
-    @DeleteMapping("/{id}")
-    public void deleteUser(@PathVariable long id) {
+    @PostMapping("/createUser")
+    public ResponseEntity<UserDTO> createUser(@RequestBody UserDTO userDTO) {
         
-        userService.deleteUser(id);
+        return ResponseEntity.ok(userService.createUser(userDTO));
     }
 
-    //TESTANDO LOGIN
     @PostMapping("/login")
     public ResponseEntity<String> login(@RequestBody UserDTO userDTO) {
         
-        boolean isValid = userService.validateUser(
-            userDTO.getName(), userDTO.getEmail());
+        boolean isValid = userValidator.validateUser(
+            userDTO.getName(), userDTO.getEmail(), userDTO.getPassword());
         
         if (isValid) {
             return ResponseEntity.ok("Logado com sucesso");
         } 
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(
             "Usuário não encontrado");
+    }
+
+    @GetMapping("/{userId}")
+    public ResponseEntity<UserDTO> getUserById(@PathVariable Long userId) {
+        return ResponseEntity.ok(userService.getUserDTOById(userId));
+
+    }
+    @GetMapping("/all")
+    public Iterable<UserDTO> getAllUsers() {
+
+        return userService.getAllUsers();
+    }
+
+    @PutMapping("/updateUser")
+    public UserDTO updateUserById(
+        @RequestBody UserDTO userDTO) {
+
+        return userService.updateUserById(userDTO);
+    }
+
+    @PutMapping("/updatePassword")
+    public void updatePasswordById(
+        @RequestBody UserDTO userDTO) {
+        
+        userService.updatePasswordById(userDTO);
+    }
+
+    @DeleteMapping("/{userId}")
+    public void deleteUserById(@PathVariable long userId) {
+        
+        userService.deleteUserById(userId);
     }
 }

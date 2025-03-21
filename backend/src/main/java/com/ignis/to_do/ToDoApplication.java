@@ -10,7 +10,7 @@ public class ToDoApplication {
 	    
 	static {
         // Carrega variáveis do arquivo .env
-        // Dotenv dotenv = Dotenv.load();
+
         Dotenv dotenv = Dotenv.configure()
         .directory(System.getProperty("user.dir")) // Define o diretório raiz
         .load();

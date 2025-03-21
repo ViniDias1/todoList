@@ -144,8 +144,98 @@ O back-end será construído utilizando o framework **Spring Boot** com **Postgr
    ```
 4. O front-end estará disponível em `http://localhost:4200`.
 
-## Testes //TODO
-Ainda será implementado
+Aqui está um **fluxo de desenvolvimento baseado nas branches** que você mencionou, garantindo organização e qualidade no código.  
+
+---
+
+## **📌 Fluxo de Desenvolvimento**
+### 🏛 **Branches Principais**  
+1. **`main`** → Versão estável e pronta para produção.  
+2. **`test`** → Para validar código antes de ir para `main`.  
+3. **`dev`** → Para desenvolvimento ativo e integração de novas features.  
+
+### 👨‍💻 **Branches de Desenvolvedores**  
+4. **`viniBranch`** → Desenvolvimento das features by Vini.  
+5. **`tayBranch`** → Desenvolvimento das features by Tay.  
+6. **`vitorBranch`** → Desenvolvimento das features by Vitor.
+6. **`{dev}Branch`** → Desenvolvimento das features by Dev.
+7. **`feat/exemplo`** → Desenvolvimento de uma feature específica.
+7. **`fix/exemplo`** → Solucionar bug específico.
+  
+
+---
+
+## **🔁 Fluxo Passo a Passo**
+### 🛠 **1. Criando uma nova funcionalidade**  
+Cada desenvolvedor cria uma branch baseada em `dev`:  
+```sh
+git checkout dev
+git pull origin dev  # Atualiza a branch local
+git checkout -b viniBranch  # Vini aka "The Calígula" cria sua branch
+```
+E começa a trabalhar na nova feature.
+
+---
+
+### 🔄 **2. Fazendo commits e atualizando o código**
+Ao finalizar uma parte da funcionalidade:
+```sh
+git add .
+git commit -m "Adicionando nova funcionalidade X"
+git push origin viniBranch
+```
+
+
+
+---
+
+### 🔄 **3. Mesclando a feature na `dev`**  
+Após terminar a feature e testar localmente, o desenvolvedor abre um **Pull Request (PR) da sua branch para `dev`**.  
+Se aprovado, a branch `viniBranch` (ou outra equivalente) pode ser deletada, pois a funcionalidade já está na `dev`.
+
+---
+
+### 🛠 **4. Testando a `dev` na `test`**  
+Quando a `dev` atinge um ponto estável com várias features concluídas, é feito o merge dela na `test`:
+```sh
+git checkout test
+git merge dev
+git push origin test
+```
+Se houver bugs, as correções são feitas na `dev` e depois mescladas novamente na `test`.
+
+---
+
+### 🚀 **5. Publicação para Produção (`main`)**  
+Quando tudo está testado e validado, a `test` é mesclada na `main`, levando as novas features para produção:  
+```sh
+git checkout main
+git merge test
+git push origin main
+```
+Isso garante que **somente código testado** vai para produção.
+
+---
+
+## **🔁 Resumo Visual do Fluxo**
+```
+       (Produção)
+         main  
+          ↑   
+        test   ← (Validação antes da produção)  
+          ↑    
+        dev    ← (Desenvolvimento principal)   
+       ↑  ↑  ↑  
+  Vini Tay Vitor  ← (Cada dev tem sua branch)  
+```
+## Testes Unitarios
+
+Os testes unitários se encontram no caminho:
+  ```bash
+   cd projeto-ignis-todo/backend/src/test/java/com/ignis/todo
+  ```
+
+Verifique a organização e insira seus testes unitários de acordo com o contexto adequado.
 
 Para rodar os testes:
 - **Back-end:**
@@ -156,6 +246,8 @@ Para rodar os testes:
   ```bash
   ng test
   ```
+
+  Para uma melhor visualização, analíse e execute os testes na barra lateral do VSCode na opção de "Testing".
 
 ## Planejamento Futuro
 - **Versões em outras stacks**: Após a conclusão da versão em Java + Angular, as versões em Node.js + React, C# + Vue.js e Python + Vue.js poderão ser desenvolvidas.

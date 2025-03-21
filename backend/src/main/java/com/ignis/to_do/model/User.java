@@ -1,14 +1,15 @@
 package com.ignis.to_do.model;
 
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.JoinTable;
-import jakarta.persistence.ManyToMany;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -26,28 +27,26 @@ public class User{
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private String name;
+    @Email
     private String email;
-    @OneToMany(mappedBy = "owner")
+    @Column(nullable = false)
+    @NotNull
+    private String password;
+    @OneToMany(mappedBy = "owner", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Board> boards;
-    @ManyToMany
-    @JoinTable(
-        name = "user_favorite_board",
-        joinColumns = @JoinColumn(name = "user_id"),
-        inverseJoinColumns = @JoinColumn(name = "board_id")
-    )
-    private List<Board> favoriteBoards;
+    
 
-    public User(String name, String email){
+    public User(String name, String email, String password) {
         this.name = name;
         this.email = email;
+        this.password = password;
     }
 
-    public Board createBoard(String title){
+    public List<Board> createBoard(Board board){
 
-        Board board = new Board();
-        board.setTitle(title);
-        board.setOwner(this);
-        return board;
+        boards.add(board);
+
+        return boards;
     }
 
     public void deleteBoard(Board board){

@@ -2,6 +2,7 @@ package com.ignis.to_do.model;
 
 import java.util.Date;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -23,7 +24,8 @@ public class Task {
     private Long id;            
     private String title;
     private String description;
-    private TaskStatus status;
+    @Column(name = "status")
+    private String status;
     @ManyToOne
     @JoinColumn(name = "list_id")
     private TaskList list;
@@ -32,22 +34,23 @@ public class Task {
     private Category category;
     private Date dueDate;
 
-    public Task(String title, TaskList list) {
+    public Task(String title, TaskList list, String status) {
         this.title = title;
         this.list = list;
+        this.status = status;
     }
 
     public Task createTask(Task task) {  
-        Task newTask = new Task();
-        newTask.setTitle(task.getTitle());
-        newTask.setDescription(task.getDescription());
-        newTask.setStatus(task.getStatus());
-        newTask.setList(task.getList());        
-        newTask.setCategory(task.getCategory());
-        newTask.setDueDate(task.getDueDate());
-        return newTask;      
+        task.setTitle(task.getTitle());
+        task.setDescription(task.getDescription());
+        task.setStatus(task.getStatus());
+        task.setList(task.getList());        
+        task.setCategory(task.getCategory());
+        task.setDueDate(task.getDueDate());
+        return task;      
         
     } 
+    
 
     public void deleteTask(Task task) {      
 

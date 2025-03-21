@@ -1,22 +1,14 @@
-import { Component, OnInit } from '@angular/core';
-import { LoginService } from './services/login.service';
-import { LoginComponent } from './login/login.component';
+import { Component } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { RouterModule } from '@angular/router';
 
 @Component({
   selector: 'app-root',
-  standalone : true,
-  imports: [LoginComponent],
-  templateUrl: './app.component.html',
-  styleUrls: ['./app.component.css']
+  standalone: true,
+  imports: [CommonModule, RouterModule],
+  template: `
+    <router-outlet></router-outlet>
+  `,
+  styles: []
 })
-export class AppComponent  {
-  mensagem: string = '';
-
-  constructor(private loginService: LoginService) { }
-
-  // ngOnInit(): void {
-  //   this.loginService.getTeste().subscribe(response => {
-  //     this.mensagem = response;
-  //   });
-  // }
-}
+export class AppComponent {}

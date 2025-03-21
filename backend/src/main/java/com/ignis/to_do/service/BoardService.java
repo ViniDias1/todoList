@@ -1,9 +1,13 @@
 package com.ignis.to_do.service;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import java.util.Optional;
+
 import org.springframework.stereotype.Service;
 
 import com.ignis.to_do.dto.BoardDTO;
+import com.ignis.to_do.dto.TaskListDTO;
+import com.ignis.to_do.exception.board_exception.BoardAlreadyExistsException;
+import com.ignis.to_do.exception.board_exception.BoardNotFoundException;
 import com.ignis.to_do.model.Board;
 import com.ignis.to_do.model.User;
 import com.ignis.to_do.repository.BoardRepository;
@@ -13,25 +17,41 @@ import jakarta.transaction.Transactional;
 @Service    
 public class BoardService {
 
-    @Autowired
-    private BoardRepository boardRepository;
-    @Autowired
-    private UserService userService;    
+    private final BoardRepository boardRepository;
+    private final UserService userService; 
+    
+    private static final String BOARD_NOT_FOUND = "Board com ID %s nao encontrado";
 
-    public BoardDTO createBoard(String title, Long ownerId) {
+    public BoardService(BoardRepository boardRepository, UserService userService) {
+        this.boardRepository = boardRepository;
+        this.userService = userService;
+    }
 
-        User user = userService.getUser(ownerId);   
-        Board board = new Board(title, user);
+    public BoardDTO createBoard(BoardDTO boardDTO) {
+
+        Optional<Board> existingBoard = boardRepository.findByTitle(boardDTO.getTitle());
+        if (existingBoard.isPresent()) {
+            throw new BoardAlreadyExistsException("Board com nome '" + boardDTO.getTitle() + "' já existe.");
+        }
+
+        User user = userService.getUser(boardDTO.getOwnerId());   
+        Board board = new Board(boardDTO.getTitle(), user);
         boardRepository.save(board);
         return new BoardDTO(board.getId(), board.getTitle(),
             board.getOwner().getId());
     }
 
-    public BoardDTO getBoardDTO(Long id) {
+    public BoardDTO getBoardById(Long boardId) {
 
-        Board board = boardRepository.findById(id).get();
+        Board board = boardRepository.findById(boardId).orElseThrow(()
+         -> new BoardNotFoundException(BOARD_NOT_FOUND.formatted(boardId)));
         return new BoardDTO(board.getId(), board.getTitle(), 
             board.getOwner().getId());
+    }
+
+    public void verifyIfBoardExists(Long boardId) {
+        boardRepository.findById(boardId).orElseThrow(()
+         -> new BoardNotFoundException(BOARD_NOT_FOUND.formatted(boardId)));
     }
 
     public Iterable<BoardDTO> getAllBoards() {
@@ -40,19 +60,57 @@ public class BoardService {
             board.getId(), board.getTitle(), board.getOwner().getId())).toList();
     }
 
-    public void deleteBoard(Long id) {
-        boardRepository.deleteById(id);
+    public Iterable<BoardDTO> getMyBoardsByOwnerId(Long ownerId) {
+
+        User user = userService.getUser(ownerId);  
+        return user.getBoards().stream().map(board -> new BoardDTO(board.getId(),
+             board.getTitle(), board.getOwner().getId())).toList();
+    }
+
+    public Iterable<TaskListDTO> myTasksListsByBoardId(Long boardId){
+
+        Board board = boardRepository.findById(boardId).orElseThrow(()
+         -> new BoardNotFoundException(BOARD_NOT_FOUND.formatted(boardId)));
+        return board.getTaskLists().stream().map(taskList -> new TaskListDTO(
+            taskList.getId(), taskList.getName(), taskList.getBoard().getId())).toList();
+    }
+
+    public boolean isFavorite(Long boardId) {
+
+        verifyIfBoardExists(boardId);
+        Board boardIsFavorite = boardRepository.findById(boardId).orElseThrow(()
+         -> new BoardNotFoundException(BOARD_NOT_FOUND.formatted(boardId)));
+        return boardIsFavorite.isFavorite();
     }
 
     @Transactional
-    public BoardDTO updateBoard(Long id, String title) {
-        boardRepository.updateTitle(id, title);
-        return new BoardDTO(id, title, 
-            boardRepository.findById(id).get().getOwner().getId());
+    public void toggleFavorite(Long boardId) {
+        
+        verifyIfBoardExists(boardId);
+        Board board = boardRepository.findById(boardId).orElseThrow(()
+        -> new BoardNotFoundException(BOARD_NOT_FOUND.formatted(boardId)));
+
+        boardRepository.updateFavorite(boardId, !board.isFavorite());
+    }
+    public void deleteBoardById(Long boardId) {
+        verifyIfBoardExists(boardId);
+        boardRepository.deleteById(boardId);
+    }
+
+    @Transactional
+    public BoardDTO updateBoardTitle(BoardDTO boardDTO) {
+
+        verifyIfBoardExists(boardDTO.getId());
+        boardRepository.updateTitle(boardDTO.getId(), boardDTO.getTitle());
+        Long boardId = boardDTO.getId();
+        Board board = boardRepository.findById(boardId).orElseThrow(()
+        -> new BoardNotFoundException(BOARD_NOT_FOUND.formatted(boardId)));
+        return new BoardDTO(boardId, boardDTO.getTitle(), board.getOwner().getId());
     }
 
     
-    public Board getBoard(Long id) {
-        return boardRepository.findById(id).get();
+    public Board getBoard(Long boardId) {
+        return boardRepository.findById(boardId).orElseThrow(()
+        -> new BoardNotFoundException(BOARD_NOT_FOUND.formatted(boardId)));
     }
 }
