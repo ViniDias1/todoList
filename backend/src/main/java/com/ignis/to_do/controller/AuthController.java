@@ -27,7 +27,7 @@ public class AuthController {
     @PostMapping("/login")
     public ResponseEntity<String> login(@RequestBody UserDTO userDTO) {
 
-        if (userService.verifyIfUserExists(userDTO)){
+        if (userService.loginVerify(userDTO)){
             String token = jwtUtil.generateToken(userDTO);
             return ResponseEntity.ok(token);
         }
