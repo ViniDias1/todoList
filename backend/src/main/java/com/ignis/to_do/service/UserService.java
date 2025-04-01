@@ -88,6 +88,6 @@ public class UserService {
     }
 
     public boolean loginVerify(UserDTO userDTO) {
-        return userRepository.existsByNameAndEmailAndPassword(userDTO.getName(), userDTO.getEmail(), userDTO.getPassword());
+        return userRepository.existsByEmailAndPassword(userDTO.getEmail(), userDTO.getPassword());
     }
 }
