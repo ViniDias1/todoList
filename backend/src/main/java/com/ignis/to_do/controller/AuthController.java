@@ -1,6 +1,8 @@
 package com.ignis.to_do.controller;
 
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -34,6 +36,11 @@ public class AuthController {
 
         return ResponseEntity.status(401).body("Usuário não encontrado");   
 
+    }
 
+    @GetMapping("/ownerId/{email}")
+    public ResponseEntity<String> getOwnerId(@PathVariable String email) {
+
+        return ResponseEntity.ok(userService.getOwnerId(email));
     }
 }

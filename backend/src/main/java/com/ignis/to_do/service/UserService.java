@@ -42,6 +42,13 @@ public class UserService {
                 .orElseThrow(() -> new UserNotFoundException(USER_NOT_FOUND.formatted(userId)));
     }
 
+    public String getOwnerId(String email) {
+
+        User user = userRepository.findByEmail(email).orElseThrow(() -> new UserNotFoundException(USER_NOT_FOUND.formatted(email)));
+        return String.valueOf(user.getId());
+        
+    }
+
     public boolean verifyIfUserExists(UserDTO userDTO) {
 
         if (userDTO.getId() != null) {
@@ -49,7 +56,7 @@ public class UserService {
                 .orElseThrow(() -> new UserNotFoundException(USER_NOT_FOUND.formatted(userDTO.getId())));
             return true;
         }
-        return userRepository.existsByNameAndEmail(userDTO.getName(), userDTO.getEmail());
+        return userRepository.existsByEmailAndPassword(userDTO.getEmail(), userDTO.getPassword());
     }
 
     public Iterable<UserDTO> getAllUsers(){

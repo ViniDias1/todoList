@@ -42,7 +42,7 @@ public class UserController {
     public ResponseEntity<String> login(@RequestBody UserDTO userDTO) {
         
         boolean isValid = userValidator.validateUser(
-            userDTO.getName(), userDTO.getEmail(), userDTO.getPassword());
+           userDTO.getEmail(), userDTO.getPassword());
         
         if (isValid) {
             return ResponseEntity.ok("Logado com sucesso");
