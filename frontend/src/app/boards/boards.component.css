@@ -148,8 +148,8 @@ header button {
   background-color: #007bff;
   color: #ffffff;
   border: none;
-  padding: 10px 15px;
-  border-radius: 8px;
+  padding: 10px;
+  border-radius: 2px;
   font-size: 14px;
   font-weight: bold;
   cursor: pointer;
@@ -311,3 +311,43 @@ header button {
     font-size: 12px;
   }
 }
+
+
+.menu-button {
+  background-color: #007bff;
+  color: #ffffff;
+  border: none;
+  padding: 10px;
+  border-radius: 2px;
+  font-size: 14px;
+  font-weight: bold;
+  cursor: pointer;
+  margin-right: 20px;
+  transition: background-color 0.3s ease, transform 0.2s ease;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.menu-button:hover {
+  background-color: #0a4483;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 10px rgba(0, 0, 0, 0.15);
+}
+
+.menu-button:active {
+  background-color: #003f7f;
+  transform: translateY(0);
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+@media (max-width: 768px) {
+  .sidebar .menu-button {
+    font-size: 14px;
+  }
+}
+
+@media (max-width: 480px) {
+  .sidebar .menu-button {
+    font-size: 12px;
+  }
+}
+

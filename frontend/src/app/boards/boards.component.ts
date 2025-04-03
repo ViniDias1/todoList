@@ -4,6 +4,9 @@ import { FormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
 import { BoardService } from '../services/board.service';
 import { AuthInterceptor } from '../interceptors/auth.interceptor';
+import {MatMenuModule} from '@angular/material/menu';
+import {MatButtonModule} from '@angular/material/button';
+import {MatSidenavModule} from '@angular/material/sidenav';
 
 interface Board {
   id: string;
@@ -15,7 +18,7 @@ interface Board {
 @Component({
   selector: 'app-boards',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterModule],
+  imports: [CommonModule, FormsModule, RouterModule, MatButtonModule, MatMenuModule, MatSidenavModule],
   providers: [
     {
       provide: 'HTTP_INTERCEPTORS',
@@ -27,6 +30,7 @@ interface Board {
   styleUrls: ['./boards.component.css']
 })
 export class BoardsComponent implements OnInit {
+  showFiller = false;
   boards: Array<Board> = [];
   showCreateForm: boolean = false;
   newBoardTitle: string = '';
