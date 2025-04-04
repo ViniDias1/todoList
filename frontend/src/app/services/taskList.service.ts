@@ -13,22 +13,18 @@ interface TaskList {
   providedIn: 'root',
 })
 export class TaskListService {
-  private readonly baseUrl = 'http://localhost:8080/taskList';
+  private readonly taskListUrl = 'http://localhost:8080/taskList';
+  private readonly taskUrl = 'http://localhost:8080/task';
 
   private readonly http=inject(HttpClient);
 
   getAllTaskLists(boardId: string): Observable<TaskList[]> {
-    return this.http.get<TaskList[]>(`${this.baseUrl}/taskListByBoardId/${boardId}`);
+    return this.http.get<TaskList[]>(`${this.taskListUrl}/taskListByBoardId/${boardId}`);
     }
-
-//   createBoard(board: Board): Observable<Board> {
-//     return this.http.post<Board>(this.baseUrl + "/createBoard", board);
-//   }
-
-//   deleteBoard(id: string): Observable<string> {
-//     return this.http.delete(this.baseUrl + "/deleteBoard/" + id, { responseType: 'text' });
-//   }
   
+  getTaskByTaskListId(taskListId: string): Observable<TaskList[]> {
+    return this.http.get<TaskList[]>(`${this.taskUrl}/taskByTaskListId/${taskListId}`);
+  }
   getToken(): string | null {
     return localStorage.getItem('jwtToken');
   }

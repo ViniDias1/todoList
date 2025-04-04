@@ -1,4 +1,4 @@
-//FIXME: Corrigir o erro de drag and drop
+//FIXME: Corrigir o erro de drag and drop -- Update no banco
 import { Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { DragDropModule } from '@angular/cdk/drag-drop';
@@ -45,14 +45,41 @@ export class MainScreenComponent {
       next: (data: TaskList[]) => {
         this.taskLists = data.map(list => ({
           ...list,
-          tasks: list.tasks ?? [] // Se tasks for undefined, define como []
+          tasks: list.tasks ?? []
         }));
+        
+        let i = 0;
+        for (const taskList of this.taskLists) {
+          
+          this.taskListService.getTaskByTaskListId(taskList.id).subscribe({
+            next: (tasks: any) => {
+              this.taskLists[i].tasks = tasks;
+              i++;
+            },
+            error: (err) => {
+              console.error('Erro ao carregar tarefas:', err);
+            },
+          });
+        }
+
+        
         console.log('Task lists loaded:', this.taskLists);
       },
       error: (err) => {
         console.error('Erro ao carregar listas:', err);
       }
     });
+    this.connectedLists = this.taskLists.map(list => list.id);
+
+  }
+
+  getTasks(taskListId: string): any[] | undefined {
+    const taskList = this.taskLists.find(list => list.id === taskListId);
+    return taskList ? taskList.tasks : undefined;
+  }
+  
+  getConnectedListIds(currentListId: string): string[] {
+    return this.connectedLists.filter(id => id !== currentListId);
   }
   
   
@@ -81,6 +108,9 @@ export class MainScreenComponent {
   
   
 
-  addTask(taskList: TaskList) {}
+  addTask(taskList: TaskList) {
+    console.log('Adicionar tarefa à lista:', taskList);
+  }
+  
 
 }
