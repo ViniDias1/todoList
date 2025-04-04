@@ -1,13 +1,47 @@
+
+
 <div class="boards-page">
+
+  <div>
+    
+  </div>
   <header class="boards-header">
     <div class="header-content">
       <h1 class="app-title">TaskFlow</h1>
-      <button class="back-button" [routerLink]="['/main']">← Último board</button>
+      
+      <button class="menu-button" mat-button [matMenuTriggerFor]="menu">Menu</button>
+      <mat-menu #menu="matMenu">
+        <button mat-menu-item>Item 1</button>
+        <button mat-menu-item>Item 2</button>
+        <button class="back-button" [routerLink]="['/main']">← Último board</button>
+      </mat-menu>
+
     </div>
 
     <input type="text" placeholder="Buscar boards..." class="search-input" />
-    <button class="create-board-button" (click)="addBoard()">+ Criar Novo Board</button>
+    <button class="create-board-button" (click)="toggleCreateForm()">+ Criar Novo Board</button>
+
+    <div *ngIf="showCreateForm" class="overlay" (click)="toggleCreateForm()"></div>
+    <div *ngIf="showCreateForm" class="create-board-form" style="margin-top: 10px;">
+      <h3>Criar Novo Board</h3>
+      <input
+        type="text"
+        placeholder="Título do Board"
+        [(ngModel)]="newBoardTitle"
+        class="form-input"
+      />
+      <textarea
+        placeholder="Descrição (opcional)"
+        [(ngModel)]="newBoardDescription"
+        class="form-textarea"
+      ></textarea>
+      <div class="form-actions">
+        <button (click)="createBoard()" class="form-submit-button">Criar</button>
+        <button (click)="toggleCreateForm()" class="form-cancel-button">Cancelar</button>
+      </div>
+    </div>
   </header>
+
   <div class="boards-container">
     <div *ngFor="let board of boards" class="board-card">
       <h3 class="board-title">{{ board.title }}</h3>
@@ -17,7 +51,6 @@
           <img src="https://img.icons8.com/?size=100&id=68064&format=png&color=000000" alt="Delete Icon" class="delete-icon" />
         </button>
       </div>
-      <p class="board-id">ID: {{ board.id }}</p>
     </div>
   </div>
 </div>
