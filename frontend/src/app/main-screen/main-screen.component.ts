@@ -1,8 +1,19 @@
-import { Component } from '@angular/core';
+//FIXME: Corrigir o erro de drag and drop
+import { Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { DragDropModule } from '@angular/cdk/drag-drop';
 import { CdkDragDrop, moveItemInArray, transferArrayItem } from '@angular/cdk/drag-drop';
-import { RouterModule } from '@angular/router';
+import { RouterModule} from '@angular/router';
+import { ActivatedRoute } from '@angular/router';
+import { TaskListService } from '../services/taskList.service';
+
+interface TaskList {
+  id: string;
+  title: string;
+  boardId: string;
+  tasks?: any[];  // Array para armazenar tarefas
+}
+
 
 @Component({
   selector: 'app-main-screen',
@@ -12,26 +23,53 @@ import { RouterModule } from '@angular/router';
   styleUrls: ['./main-screen.component.css']
 })
 export class MainScreenComponent {
-  todo = [
-    { title: 'Create social media calendar', description: 'Plan content for next month' },
-    { title: 'Design new landing page', description: 'Homepage redesign project' },
-    { title: 'Email campaign', description: 'Q1 newsletter' }
-  ];
 
-  inProgress = [
-    { title: 'Fix navigation bug', description: 'Mobile menu issues' },
-    { title: 'API integration', description: 'Connect to payment gateway' }
-  ];
+  private boardId: string | null = null;
+  taskLists: Array<TaskList> = [];
+  connectedLists: string[] = [];
 
-  done = [
-    { title: 'Icon set update', description: 'Refresh product icons' }
-  ];
+   
 
+  private readonly router = inject(ActivatedRoute);
+  private readonly taskListService = inject(TaskListService);
+  
 
-  drop(event: CdkDragDrop<any[]>) {
+  ngOnInit(): void {
+    this.loadTaskLists();
+
+  }
+
+  loadTaskLists(): void {
+    this.boardId = this.router.snapshot.queryParams['boardId'];
+    this.taskListService.getAllTaskLists(this.boardId!).subscribe({
+      next: (data: TaskList[]) => {
+        this.taskLists = data.map(list => ({
+          ...list,
+          tasks: list.tasks ?? [] // Se tasks for undefined, define como []
+        }));
+        console.log('Task lists loaded:', this.taskLists);
+      },
+      error: (err) => {
+        console.error('Erro ao carregar listas:', err);
+      }
+    });
+  }
+  
+  
+  drop(event: CdkDragDrop<any[] | undefined>) {
+    if (!event.container.data) {
+      console.error('Erro: container.data está undefined');
+      return;
+    }
+  
     if (event.previousContainer === event.container) {
       moveItemInArray(event.container.data, event.previousIndex, event.currentIndex);
     } else {
+      if (!event.previousContainer.data) {
+        console.error('Erro: previousContainer.data está undefined');
+        return;
+      }
+      
       transferArrayItem(
         event.previousContainer.data,
         event.container.data,
@@ -40,19 +78,9 @@ export class MainScreenComponent {
       );
     }
   }
+  
+  
 
-  addTask(list: string) {
-    const newTask = {
-      title: 'Nova Tarefa',
-      description: 'Descrição da nova tarefa'
-    };
+  addTask(taskList: TaskList) {}
 
-    if (list === 'todo') {
-      this.todo.push(newTask);
-    } else if (list === 'inProgress') {
-      this.inProgress.push(newTask);
-    } else if (list === 'done') {
-      this.done.push(newTask);
-    }
-  }
 }
