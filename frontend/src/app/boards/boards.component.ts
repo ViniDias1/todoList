@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, inject} from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
@@ -7,6 +7,7 @@ import { AuthInterceptor } from '../interceptors/auth.interceptor';
 import {MatMenuModule} from '@angular/material/menu';
 import {MatButtonModule} from '@angular/material/button';
 import {MatSidenavModule} from '@angular/material/sidenav';
+import { Router } from '@angular/router';
 
 interface Board {
   id: string;
@@ -36,7 +37,8 @@ export class BoardsComponent implements OnInit {
   newBoardTitle: string = '';
   newBoardDescription: string = '';
 
-  constructor(private readonly boardService: BoardService) {}
+  private readonly boardService=inject(BoardService);
+  private readonly router=inject(Router);
 
   ngOnInit(): void {
     this.loadBoards();
@@ -105,4 +107,10 @@ export class BoardsComponent implements OnInit {
     window.location.reload();
 
   }
+
+  goToBoard(board: Board) : void { 
+    this.router.navigate(['/main'], { queryParams: { boardId: board.id } });
+
+  }
 }
+
