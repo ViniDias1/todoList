@@ -43,7 +43,13 @@ public class TaskController {
     public Iterable<TaskDTO> getAllTasks() {
 
         return taskService.getAllTasks();
-    }   
+    }  
+    
+    @GetMapping("/taskByTaskListId/{taskListId}")
+    public Iterable<TaskDTO> getTasksByTaskListId(@PathVariable Long taskListId) {
+        
+        return taskService.getTasksByTaskListId(taskListId);
+    }
     
     @PutMapping("/updateTaskTitle")
     public TaskDTO updateTaskTitle(
