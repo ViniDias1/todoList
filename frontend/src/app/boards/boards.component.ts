@@ -1,13 +1,12 @@
 import { Component, OnInit, inject} from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { RouterModule } from '@angular/router';
+import { RouterModule,Router } from '@angular/router';
 import { BoardService } from '../services/board.service';
 import { AuthInterceptor } from '../interceptors/auth.interceptor';
 import {MatMenuModule} from '@angular/material/menu';
 import {MatButtonModule} from '@angular/material/button';
 import {MatSidenavModule} from '@angular/material/sidenav';
-import { Router } from '@angular/router';
 
 interface Board {
   id: string;
