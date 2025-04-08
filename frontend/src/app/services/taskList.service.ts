@@ -15,6 +15,7 @@ interface TaskList {
 export class TaskListService {
   private readonly taskListUrl = 'http://localhost:8080/taskList';
   private readonly taskUrl = 'http://localhost:8080/task';
+  
 
   private readonly http=inject(HttpClient);
 
@@ -27,29 +28,33 @@ export class TaskListService {
   }
 
   moveTask(task: any, destinationListId: string): void {
-  const deleteUrl = `${this.taskUrl}/deleteTask/${task.id}`;
-  const createUrl = `${this.taskUrl}/createTask`;
-
-  this.http.delete(deleteUrl).subscribe({
-    next: () => {
-      console.log('Task successfully deleted from original list.');
-    },
-    error: (error) => {
-      console.error('Error deleting task:', error);
-    }
-  });
-
-  task.listId = destinationListId;
-
-  this.http.post(createUrl, task).subscribe({
-    next: () => {
-      console.log('Task successfully added to new list.');
-    },
-    error: (error) => {
-      console.error('Error adding task to new list:', error);
-    }
-  });
+    this.deleteTask(task.id);
+    task.listId = destinationListId;
+    this.createTask(task);
 }
+
+
+  createTask(task: any): void {
+    this.http.post(this.taskUrl + '/createTask', task).subscribe({
+      next: () => {
+        console.log('Task successfully added to new list.');
+      },
+      error: (error) => {
+        console.error('Error adding task to new list:', error);
+      }
+    });
+  }
+
+  deleteTask(taskId: string): void {
+    this.http.delete(`${this.taskUrl}/deleteTask/${taskId}`).subscribe({
+      next: () => {
+        console.log('Task successfully deleted from original list.');
+      },
+      error: (error) => {
+        console.error('Error deleting task:', error);
+      }
+    });
+  }
 
   getToken(): string | null {
     return localStorage.getItem('jwtToken');
