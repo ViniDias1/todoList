@@ -1,17 +1,14 @@
-//FIXME: Corrigir o erro de drag and drop -- Update no banco
 import { Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { DragDropModule } from '@angular/cdk/drag-drop';
-import { CdkDragDrop, moveItemInArray, transferArrayItem } from '@angular/cdk/drag-drop';
-import { RouterModule} from '@angular/router';
-import { ActivatedRoute } from '@angular/router';
+import { DragDropModule, CdkDragDrop, moveItemInArray, transferArrayItem } from '@angular/cdk/drag-drop';
+import { ActivatedRoute,RouterModule } from '@angular/router';
 import { TaskListService } from '../services/taskList.service';
 
 interface TaskList {
   id: string;
-  title: string;
+  name: string;
   boardId: string;
-  tasks?: any[];  // Array para armazenar tarefas
+  tasks?: any[];
 }
 
 
@@ -28,21 +25,17 @@ export class MainScreenComponent {
   taskLists: Array<TaskList> = [];
   connectedLists: string[] = [];
 
-   
-
   private readonly router = inject(ActivatedRoute);
-  private readonly taskListService = inject(TaskListService);
-  
+  private readonly taskListService = inject(TaskListService);  
 
   ngOnInit(): void {
     this.loadTaskLists();
-
   }
 
   loadTaskLists(): void {
     this.boardId = this.router.snapshot.queryParams['boardId'];
     this.taskListService.getAllTaskLists(this.boardId!).subscribe({
-      next: (data: TaskList[]) => {
+      next: (data: Array<TaskList>) => {
         this.taskLists = data.map(list => ({
           ...list,
           tasks: list.tasks ?? []
@@ -62,15 +55,15 @@ export class MainScreenComponent {
           });
         }
 
-        
+
+        this.connectedLists = this.taskLists.map(list => list.name);
+        console.log('Connected lists:', this.connectedLists);
         console.log('Task lists loaded:', this.taskLists);
       },
       error: (err) => {
         console.error('Erro ao carregar listas:', err);
       }
     });
-    this.connectedLists = this.taskLists.map(list => list.id);
-
   }
 
   getTasks(taskListId: string): any[] | undefined {
@@ -79,7 +72,9 @@ export class MainScreenComponent {
   }
   
   getConnectedListIds(currentListId: string): string[] {
-    return this.connectedLists.filter(id => id !== currentListId);
+    return this.taskLists
+      .filter(list => list.id !== currentListId)
+      .map(list => list.name);
   }
   
   
@@ -88,7 +83,7 @@ export class MainScreenComponent {
       console.error('Erro: container.data está undefined');
       return;
     }
-  
+
     if (event.previousContainer === event.container) {
       moveItemInArray(event.container.data, event.previousIndex, event.currentIndex);
     } else {
@@ -103,14 +98,18 @@ export class MainScreenComponent {
         event.previousIndex,
         event.currentIndex
       );
+
+      const taskDestination = this.taskLists.find(list => list.tasks === event.container.data)?.id;
+      this.moveTask(event.container.data[event.currentIndex], taskDestination);
+
     }
   }
   
-  
+  moveTask(task: any, taskIdDestination: any): void {
+    this.taskListService.moveTask(task, taskIdDestination);
+  }
 
   addTask(taskList: TaskList) {
     console.log('Adicionar tarefa à lista:', taskList);
   }
-  
-
 }

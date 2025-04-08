@@ -1,6 +1,5 @@
-<!-- FIXME: Need to move the tasks -->
 <header class="main-header">
-  <h1>taskList.title</h1>
+  <h1>taskList.name</h1>
   <button routerLink="/boards" class="boards-button">Ir para Boards</button>
 </header>
 <div class="board-container">
@@ -8,11 +7,11 @@
   <div class="board-container">
     @for (list of taskLists; track list) {
       <div class="list-container">
-        <h2 class="list-title">{{ list.title }}</h2>
+        <h2 class="list-name">{{ list.name }}</h2>
   
         <div
         cdkDropList
-        [id]="list.id"
+        [id]="list.name"
         [cdkDropListData]="list.tasks"
         [cdkDropListConnectedTo]="getConnectedListIds(list.id)"
         class="task-list"
@@ -21,7 +20,7 @@
       
           @for (task of list.tasks; track task) {
             <div class="task-card" cdkDrag>
-              <h3 class="task-title">{{ task.title }}</h3>
+              <h5 class="task-name">{{ task.title }}</h5>
               <p class="task-description">{{ task.description }}</p>
             </div>
           }

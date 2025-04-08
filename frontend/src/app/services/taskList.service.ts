@@ -5,7 +5,7 @@ import { Observable } from 'rxjs';
 
 interface TaskList {
   id: string;
-  title: string;
+  name: string;
   boardId: string;
 }
 
@@ -25,6 +25,32 @@ export class TaskListService {
   getTaskByTaskListId(taskListId: string): Observable<TaskList[]> {
     return this.http.get<TaskList[]>(`${this.taskUrl}/taskByTaskListId/${taskListId}`);
   }
+
+  moveTask(task: any, destinationListId: string): void {
+  const deleteUrl = `${this.taskUrl}/deleteTask/${task.id}`;
+  const createUrl = `${this.taskUrl}/createTask`;
+
+  this.http.delete(deleteUrl).subscribe({
+    next: () => {
+      console.log('Task successfully deleted from original list.');
+    },
+    error: (error) => {
+      console.error('Error deleting task:', error);
+    }
+  });
+
+  task.listId = destinationListId;
+
+  this.http.post(createUrl, task).subscribe({
+    next: () => {
+      console.log('Task successfully added to new list.');
+    },
+    error: (error) => {
+      console.error('Error adding task to new list:', error);
+    }
+  });
+}
+
   getToken(): string | null {
     return localStorage.getItem('jwtToken');
   }
