@@ -26,7 +26,6 @@ public class JwtUtil {
 
     public String generateToken(UserDTO userDTO) {
 
-        // String username = userDTO.getName();
         String email = userDTO.getEmail();
         String password = userDTO.getPassword();
         
