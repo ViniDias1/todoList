@@ -8,6 +8,11 @@ interface TaskList {
   name: string;
   boardId: string;
 }
+interface Task {
+  title: string;
+  status: string;
+  listId: string;
+}
 
 @Injectable({
   providedIn: 'root',
@@ -25,6 +30,10 @@ export class TaskListService {
   
   getTaskByTaskListId(taskListId: string): Observable<TaskList[]> {
     return this.http.get<TaskList[]>(`${this.taskUrl}/taskByTaskListId/${taskListId}`);
+  }
+
+  addTask(task: Task): Observable<Task> {
+    return this.http.post<Task>(`${this.taskUrl}/createTask`, task);
   }
 
   moveTask(task: any, destinationListId: string): void {
