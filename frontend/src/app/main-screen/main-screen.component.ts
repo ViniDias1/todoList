@@ -3,6 +3,10 @@ import { CommonModule } from '@angular/common';
 import { DragDropModule, CdkDragDrop, moveItemInArray, transferArrayItem } from '@angular/cdk/drag-drop';
 import { ActivatedRoute,RouterModule } from '@angular/router';
 import { TaskListService } from '../services/taskList.service';
+import {MatIconModule} from '@angular/material/icon';
+import {MatMenuModule} from '@angular/material/menu';
+import {MatButtonModule} from '@angular/material/button';
+import { FormsModule } from '@angular/forms';
 
 interface TaskList {
   id: string;
@@ -11,11 +15,17 @@ interface TaskList {
   tasks?: any[];
 }
 
+interface Task {
+  title: string;
+  status: string;
+  listId: string;
+}
+
 
 @Component({
   selector: 'app-main-screen',
   standalone: true,
-  imports: [CommonModule, DragDropModule, RouterModule],
+  imports: [CommonModule, DragDropModule, RouterModule, MatButtonModule, MatMenuModule, MatIconModule, FormsModule],
   templateUrl: './main-screen.component.html',
   styleUrls: ['./main-screen.component.css']
 })
@@ -24,6 +34,11 @@ export class MainScreenComponent {
   private boardId: string | null = null;
   taskLists: Array<TaskList> = [];
   connectedLists: string[] = [];
+
+  showCreateTaskForm: boolean = false;
+  newTaskTitle: string = '';
+  newTaskDescription: string = '';
+  selectedList: TaskList | null = null;
 
   private readonly router = inject(ActivatedRoute);
   private readonly taskListService = inject(TaskListService);  
@@ -109,7 +124,41 @@ export class MainScreenComponent {
     this.taskListService.moveTask(task, taskIdDestination);
   }
 
-  addTask(taskList: TaskList) {
-    console.log('Adicionar tarefa à lista:', taskList);
+
+  toggleCreateTaskForm(list?: TaskList): void {
+    this.showCreateTaskForm = !this.showCreateTaskForm;
+    this.newTaskTitle = '';
+    this.newTaskDescription = '';
+    this.selectedList = list || null;
+  }
+
+  createTask(list: TaskList | null): void {
+    if (!list) {
+      console.error('No list selected for task creation.');
+      return;
+    }
+
+    if (!this.newTaskTitle.trim()) {
+      alert('O título é obrigatório!');
+      return;
+    }
+
+    const newTask: Task = {
+      title: this.newTaskTitle,
+      status: 'pending',
+      listId: list.id
+    };
+
+    this.taskListService.addTask(newTask).subscribe({
+      next: (task) => {
+        list.tasks?.push(task);
+        console.log('Task created:', task);
+      },
+      error: (err) => {
+        console.error('Failed to create task:', err);
+      }
+    });
+
+    this.toggleCreateTaskForm();
   }
 }
