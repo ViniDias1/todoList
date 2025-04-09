@@ -12,6 +12,20 @@ header {
   align-items: center;
 }
 
+.board-title-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.board-actions{
+  display: flex;
+  justify-content: space-between;
+  flex-direction: column;
+  padding: 10px;
+  
+}
+
 .boards-header {
   display: flex;
   align-items: center;
@@ -118,7 +132,6 @@ header {
   background: none;
   border: none;
   font-size: 18px;
-  color: #ff4d4d;
   cursor: pointer;
 }
 
