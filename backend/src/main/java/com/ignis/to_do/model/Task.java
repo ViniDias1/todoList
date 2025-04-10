@@ -34,9 +34,10 @@ public class Task {
     private Category category;
     private Date dueDate;
 
-    public Task(String title, TaskList list, String status) {
+    public Task(String title, TaskList list, String description, String status) {
         this.title = title;
         this.list = list;
+        this.description = description;
         this.status = status;
     }
 
