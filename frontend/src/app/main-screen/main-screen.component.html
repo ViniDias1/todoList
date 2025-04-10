@@ -5,10 +5,10 @@
 <div class="board-container">
 
   <div class="board-container">
-    @for (list of taskLists; track list) {
+    <div *ngFor="let taskList of taskLists; trackBy: trackByTaskListId">
       <div class="list-container">
         <div class="list-title">
-          <h2 class="list-name">{{ list.name }}</h2>
+          <h2 class="list-name">{{ taskList.name }}</h2>
           <button mat-icon-button [matMenuTriggerFor]="menu" aria-label="Example icon-button with a menu">
             <mat-icon>more_vert</mat-icon>
           </button>
@@ -20,14 +20,14 @@
         </div>
         <div
         cdkDropList
-        [id]="list.name"
-        [cdkDropListData]="list.tasks"
-        [cdkDropListConnectedTo]="getConnectedListIds(list.id)"
+        [id]="taskList.id"
+        [cdkDropListData]="taskList.tasks"
+        [cdkDropListConnectedTo]="getConnectedListIds(taskList.id)"
         class="task-list"
         (cdkDropListDropped)="drop($event)"
       >
       
-          @for (task of list.tasks; track task) {
+          @for (task of taskList.tasks; track task) {
             <div class="task-card" cdkDrag>
               <div class="task-header">
                 <h5 class="task-name">{{ task.title }}</h5>
@@ -36,7 +36,7 @@
                   <img src="https://img.icons8.com/?size=100&id=86374&format=png&color=000000" alt="">
                 </button>
                 <mat-menu #menu="matMenu">
-                  <button mat-menu-item>
+                  <button mat-menu-item (click)="deleteTask(task.id)">
                     <img src="https://img.icons8.com/?size=100&id=68064&format=png&color=000000" height="15" width="15" alt="">
                     <span>Delete</span>
                   </button>
@@ -45,10 +45,10 @@
               <p class="task-description">{{ task.description }}</p>
             </div>
           }
-          <button class="add-task-button" (click)="toggleCreateTaskForm(list)">+ Adicionar Tarefa</button>
+          <button class="add-task-button" (click)="toggleCreateTaskForm(taskList)">+ Adicionar Tarefa</button>
         </div>
       </div>
-    }
+    </div>
   </div>
 </div>
 
