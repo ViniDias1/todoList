@@ -55,14 +55,14 @@ export class MainScreenComponent {
           ...list,
           tasks: list.tasks ?? []
         }));
-        
-        let i = 0;
+
         for (const taskList of this.taskLists) {
-          
           this.taskListService.getTaskByTaskListId(taskList.id).subscribe({
             next: (tasks: any) => {
-              this.taskLists[i].tasks = tasks;
-              i++;
+              const listToUpdate = this.taskLists.find(list => list.id === taskList.id);
+              if (listToUpdate) {
+                listToUpdate.tasks = tasks;
+              }
             },
             error: (err) => {
               console.error('Erro ao carregar tarefas:', err);
@@ -70,10 +70,7 @@ export class MainScreenComponent {
           });
         }
 
-
-        this.connectedLists = this.taskLists.map(list => list.name);
-        console.log('Connected lists:', this.connectedLists);
-        console.log('Task lists loaded:', this.taskLists);
+        this.connectedLists = this.taskLists.map(list => list.name);  
       },
       error: (err) => {
         console.error('Erro ao carregar listas:', err);
@@ -122,6 +119,7 @@ export class MainScreenComponent {
   
   moveTask(task: any, taskIdDestination: any): void {
     this.taskListService.moveTask(task, taskIdDestination);
+    this.loadTaskLists();
   }
 
 
@@ -132,7 +130,13 @@ export class MainScreenComponent {
     this.selectedList = list || null;
   }
 
+  deleteTask(taskId: string): void {
+    this.taskListService.deleteTask(taskId);
+    this.loadTaskLists();
+  }
+
   createTask(list: TaskList | null): void {
+    // debugger;
     if (!list) {
       console.error('No list selected for task creation.');
       return;
@@ -145,13 +149,12 @@ export class MainScreenComponent {
 
     const newTask: Task = {
       title: this.newTaskTitle,
-      status: 'pending',
+      status: 'PENDING',
       listId: list.id
     };
 
     this.taskListService.addTask(newTask).subscribe({
       next: (task) => {
-        list.tasks?.push(task);
         console.log('Task created:', task);
       },
       error: (err) => {
@@ -160,5 +163,11 @@ export class MainScreenComponent {
     });
 
     this.toggleCreateTaskForm();
+    this.loadTaskLists();
+    console.log(this.taskLists);
+  }
+
+  trackByTaskListId(index: number, taskList: TaskList): string {
+    return taskList.id;
   }
 }
