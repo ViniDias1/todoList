@@ -37,6 +37,7 @@ export class TaskListService {
   }
 
   moveTask(task: any, destinationListId: string): void {
+
     this.deleteTask(task.id);
     task.listId = destinationListId;
     this.createTask(task);
@@ -56,12 +57,8 @@ export class TaskListService {
 
   deleteTask(taskId: string): void {
     this.http.delete(`${this.taskUrl}/deleteTask/${taskId}`).subscribe({
-      next: () => {
-        console.log('Task successfully deleted from original list.');
-      },
-      error: (error) => {
-        console.error('Error deleting task:', error);
-      }
+      next: () => {},
+      error: () => {}
     });
   }
 
