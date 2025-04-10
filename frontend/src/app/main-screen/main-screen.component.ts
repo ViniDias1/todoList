@@ -18,6 +18,7 @@ interface TaskList {
 interface Task {
   title: string;
   status: string;
+  description?: string;
   listId: string;
 }
 
@@ -146,10 +147,10 @@ export class MainScreenComponent {
       alert('O título é obrigatório!');
       return;
     }
-
     const newTask: Task = {
       title: this.newTaskTitle,
       status: 'PENDING',
+      description: this.newTaskDescription,
       listId: list.id
     };
 

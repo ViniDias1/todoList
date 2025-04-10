@@ -11,6 +11,7 @@ interface TaskList {
 interface Task {
   title: string;
   status: string;
+  description?: string;
   listId: string;
 }
 
@@ -33,6 +34,7 @@ export class TaskListService {
   }
 
   addTask(task: Task): Observable<Task> {
+    debugger; 
     return this.http.post<Task>(`${this.taskUrl}/createTask`, task);
   }
 
@@ -45,6 +47,7 @@ export class TaskListService {
 
 
   createTask(task: any): void {
+    debugger;
     this.http.post(this.taskUrl + '/createTask', task).subscribe({
       next: () => {
         console.log('Task successfully added to new list.');
