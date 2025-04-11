@@ -94,7 +94,7 @@ header {
 }
 
 .board-card:hover {
-  transform: translateY(-2px);
+  transform: translateY(-2px) scale(1.01) skew(1deg) rotate(1deg) translateX(1px) translateY(1px); 
   box-shadow: 0 6px 10px rgba(0, 0, 0, 0.15);
 }
 
