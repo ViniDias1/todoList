@@ -2,7 +2,7 @@
   <div class="header-content">
       <h1>{{ boardName }}</h1>
       <button mat-icon-button [matMenuTriggerFor]="menu" aria-label="Example icon-button with a menu">
-        <mat-icon>more_vert</mat-icon>
+        <img src="https://img.icons8.com/?size=100&id=37924&format=png&color=000000" alt="">
       </button>
       <mat-menu #menu="matMenu">
         <button mat-menu-item (click)="toggleRenameBoardForm()">
@@ -12,7 +12,6 @@
   </div>
 
   
-  <!-- <button class="boards-button" (click)="toggleRenameBoardForm()">Renomear Board</button> -->
   <button routerLink="/boards" class="boards-button">Ir para Boards</button>
   
 </header>
@@ -22,7 +21,7 @@
       <div class="list-title">
         <h2 class="list-name">{{ taskList.name }}</h2>
         <button mat-icon-button [matMenuTriggerFor]="menu" aria-label="Example icon-button with a menu">
-          <mat-icon>more_vert</mat-icon>
+          <img src="https://img.icons8.com/?size=100&id=37924&format=png&color=000000" alt="">
         </button>
         <mat-menu #menu="matMenu">
           <button mat-menu-item (click)="toggleRenameListForm(taskList)">
@@ -45,8 +44,8 @@
           <div class="task-card" cdkDrag>
             <div class="task-header">
               <h5 class="task-name">{{ task.title }}</h5>
-              <button mat-icon-button [matMenuTriggerFor]="menu" aria-label="Example icon-button with a menu">
-                <img src="https://img.icons8.com/?size=100&id=86374&format=png&color=000000" alt="">
+              <button mat-icon-button [matMenuTriggerFor]="menu" aria-label="Options">
+                <img src="https://img.icons8.com/?size=100&id=47978&format=png&color=000000" alt="">
               </button>
               <mat-menu #menu="matMenu">
                 <button mat-menu-item (click)="deleteTask(task.id)">
