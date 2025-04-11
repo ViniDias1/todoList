@@ -33,6 +33,7 @@ interface Task {
 export class MainScreenComponent {
 
   private boardId: string | null = null;
+  public boardName: string = '';
   taskLists: Array<TaskList> = [];
   connectedLists: string[] = [];
 
@@ -41,40 +42,70 @@ export class MainScreenComponent {
   newTaskDescription: string = '';
   selectedList: TaskList | null = null;
 
+  showCreateListForm: boolean = false;
+  newListName: string = '';
+
+  showRenameListForm: boolean = false;
+  renameListName: string = '';
+  selectedListToRename: TaskList | null = null;
+
+  showRenameBoardForm: boolean = false;
+  renameBoardName: string = '';
+
   private readonly router = inject(ActivatedRoute);
   private readonly taskListService = inject(TaskListService);  
 
   ngOnInit(): void {
+    this.loadBoardName();
     this.loadTaskLists();
   }
 
-  loadTaskLists(): void {
+  loadBoardName(): void {
     this.boardId = this.router.snapshot.queryParams['boardId'];
-    this.taskListService.getAllTaskLists(this.boardId!).subscribe({
-      next: (data: Array<TaskList>) => {
-        this.taskLists = data.map(list => ({
-          ...list,
-          tasks: list.tasks ?? []
+    if (this.boardId) {
+      this.taskListService.getBoardById(this.boardId).subscribe({
+        next: (board) => {
+          this.boardName = board.title; // Set the board name
+        },
+        error: (err) => {
+          console.error('Failed to load board name:', err);
+        }
+      });
+    }
+  }
+
+  loadTaskLists(): void {
+    const boardId = this.router.snapshot.queryParams['boardId'];
+    if (!boardId) {
+      console.error('Board ID not found');
+      return;
+    }
+
+    this.taskListService.getAllTaskLists(boardId).subscribe({
+      next: (taskLists: TaskList[]) => {
+        this.taskLists = taskLists.map(taskList => ({
+          ...taskList,
+          tasks: taskList.tasks || []
         }));
 
-        for (const taskList of this.taskLists) {
+        this.taskLists.forEach(taskList => {
           this.taskListService.getTaskByTaskListId(taskList.id).subscribe({
-            next: (tasks: any) => {
+            next: (tasks: any[]) => {
               const listToUpdate = this.taskLists.find(list => list.id === taskList.id);
               if (listToUpdate) {
                 listToUpdate.tasks = tasks;
               }
             },
-            error: (err) => {
-              console.error('Erro ao carregar tarefas:', err);
+            error: (error) => {
+              console.error('Error loading tasks:', error);
             },
           });
-        }
+        });
 
-        this.connectedLists = this.taskLists.map(list => list.name);  
+        this.connectedLists = this.taskLists.map(list => list.name);
       },
-      error: (err) => {
-        console.error('Erro ao carregar listas:', err);
+      error: (error) => {
+        console.error('Error loading task lists:', error);
       }
     });
   }
@@ -137,7 +168,6 @@ export class MainScreenComponent {
   }
 
   createTask(list: TaskList | null): void {
-    // debugger;
     if (!list) {
       console.error('No list selected for task creation.');
       return;
@@ -166,6 +196,104 @@ export class MainScreenComponent {
     this.toggleCreateTaskForm();
     this.loadTaskLists();
     console.log(this.taskLists);
+  }
+
+  toggleCreateListForm(): void {
+    this.showCreateListForm = !this.showCreateListForm;
+    this.newListName = '';
+  }
+
+  createTaskList(): void {
+    if (!this.newListName.trim()) {
+      alert('O nome da lista é obrigatório!');
+      return;
+    }
+
+    const newTaskList = {
+      id: '',
+      name: this.newListName,
+      boardId: this.boardId!,
+      tasks: []
+    };
+
+    this.taskListService.createTaskList(newTaskList).subscribe({
+      next: (list) => {
+        console.log('Task list created:', list);
+        this.taskLists.push(list);
+      },
+      error: (err) => {
+        console.error('Failed to create task list:', err);
+      }
+    });
+
+    this.toggleCreateListForm();
+  }
+
+  deleteTaskList(taskListId: string): void {
+    this.taskListService.deleteTaskList(taskListId).subscribe({
+      next: () => {
+        this.taskLists = this.taskLists.filter(list => list.id !== taskListId);
+      },
+      error: (err) => {
+        console.error('Failed to delete task list:', err);
+      }
+    });
+  }
+
+  toggleRenameListForm(list?: TaskList): void {
+    this.showRenameListForm = !this.showRenameListForm;
+    this.renameListName = list ? list.name : '';
+    this.selectedListToRename = list || null;
+  }
+
+  renameTaskList(): void {
+    if (!this.renameListName.trim()) {
+      alert('O nome da lista é obrigatório!');
+      return;
+    }
+
+    if (this.selectedListToRename) {
+      this.selectedListToRename.name = this.renameListName;
+      this.taskListService.updateTaskListTitle(this.selectedListToRename.id, this.renameListName).subscribe({
+        next: () => {
+          console.log('Task list renamed successfully.');
+        },
+        error: (err) => {
+          console.error('Failed to rename task list:', err);
+        }
+      });
+    }
+
+    this.toggleRenameListForm();
+  }
+
+  toggleRenameBoardForm(): void {
+    this.showRenameBoardForm = !this.showRenameBoardForm;
+    this.renameBoardName = this.boardName;
+  }
+
+  renameBoard(): void {
+    if (!this.renameBoardName.trim()) {
+      alert('O nome do board é obrigatório!');
+      return;
+    }
+
+    if (this.boardId) {
+      this.taskListService.updateBoardTitle(this.boardId, this.renameBoardName).subscribe({
+        next: () => {
+          this.boardName = this.renameBoardName;
+          console.log('Board renamed successfully.');
+        },
+        error: (err) => {
+          console.error('Failed to rename board:', err);
+        }
+      });
+    }
+
+    this.toggleRenameBoardForm();
+    window.location.reload();
+
+    
   }
 
   trackByTaskListId(index: number, taskList: TaskList): string {

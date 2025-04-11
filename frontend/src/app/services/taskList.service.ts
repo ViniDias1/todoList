@@ -27,7 +27,7 @@ export class TaskListService {
 
   getAllTaskLists(boardId: string): Observable<TaskList[]> {
     return this.http.get<TaskList[]>(`${this.taskListUrl}/taskListByBoardId/${boardId}`);
-    }
+  }
   
   getTaskByTaskListId(taskListId: string): Observable<TaskList[]> {
     return this.http.get<TaskList[]>(`${this.taskUrl}/taskByTaskListId/${taskListId}`);
@@ -46,6 +46,7 @@ export class TaskListService {
 
 
   createTask(task: any): void {
+    
     this.http.post(this.taskUrl + '/createTask', task).subscribe({
       next: () => {
         console.log('Task successfully added to new list.');
@@ -72,5 +73,25 @@ export class TaskListService {
     return new HttpHeaders({
       Authorization: `Bearer ${token}`
     });
+  }
+
+  createTaskList(taskList: TaskList): Observable<TaskList> {
+    return this.http.post<TaskList>(`${this.taskListUrl}/createTaskList`, taskList);
+  }
+
+  deleteTaskList(taskListId: string): Observable<void> {
+    return this.http.delete<void>(`${this.taskListUrl}/deleteTaskList/${taskListId}`);
+  }
+
+  getBoardById(boardId: string): Observable<any> {
+    return this.http.get<any>(`http://localhost:8080/board/getBoard/${boardId}`);
+  }
+
+  updateTaskListTitle(taskListId: string, newTitle: string): Observable<TaskList> {
+    return this.http.put<TaskList>(`${this.taskListUrl}/updateTaskList`, {id: taskListId, name: newTitle });
+  }
+
+  updateBoardTitle(boardId: string, newTitle: string): Observable<any> {
+    return this.http.put<any>(`http://localhost:8080/board/updateBoardTitle`, { id: boardId, title: newTitle });
   }
 }
