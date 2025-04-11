@@ -1,24 +1,39 @@
 <header class="main-header">
-  <h1>taskList.name</h1>
+  <div class="header-content">
+      <h1>{{ boardName }}</h1>
+      <button mat-icon-button [matMenuTriggerFor]="menu" aria-label="Example icon-button with a menu">
+        <mat-icon>more_vert</mat-icon>
+      </button>
+      <mat-menu #menu="matMenu">
+        <button mat-menu-item (click)="toggleRenameBoardForm()">
+          <span>Rename</span>
+        </button>
+      </mat-menu>
+  </div>
+
+  
+  <!-- <button class="boards-button" (click)="toggleRenameBoardForm()">Renomear Board</button> -->
   <button routerLink="/boards" class="boards-button">Ir para Boards</button>
+  
 </header>
 <div class="board-container">
-
   <div class="board-container">
-    <div *ngFor="let taskList of taskLists; trackBy: trackByTaskListId">
-      <div class="list-container">
-        <div class="list-title">
-          <h2 class="list-name">{{ taskList.name }}</h2>
-          <button mat-icon-button [matMenuTriggerFor]="menu" aria-label="Example icon-button with a menu">
-            <mat-icon>more_vert</mat-icon>
+    <div *ngFor="let taskList of taskLists; trackBy: trackByTaskListId" class="list-container">
+      <div class="list-title">
+        <h2 class="list-name">{{ taskList.name }}</h2>
+        <button mat-icon-button [matMenuTriggerFor]="menu" aria-label="Example icon-button with a menu">
+          <mat-icon>more_vert</mat-icon>
+        </button>
+        <mat-menu #menu="matMenu">
+          <button mat-menu-item (click)="toggleRenameListForm(taskList)">
+            <span>Rename</span>
           </button>
-          <mat-menu #menu="matMenu">
-            <button mat-menu-item>
-              <span>Delete</span>
-            </button>
-          </mat-menu>
-        </div>
-        <div
+          <button mat-menu-item (click)="deleteTaskList(taskList.id)">
+            <span>Delete</span>
+          </button>
+        </mat-menu>
+      </div>
+      <div
         cdkDropList
         [id]="taskList.name"
         [cdkDropListData]="taskList.tasks"
@@ -26,28 +41,28 @@
         class="task-list"
         (cdkDropListDropped)="drop($event)"
       >
-      
-          @for (task of taskList.tasks; track task) {
-            <div class="task-card" cdkDrag>
-              <div class="task-header">
-                <h5 class="task-name">{{ task.title }}</h5>
-                
-                <button mat-icon-button [matMenuTriggerFor]="menu" aria-label="Example icon-button with a menu">
-                  <img src="https://img.icons8.com/?size=100&id=86374&format=png&color=000000" alt="">
+        @for (task of taskList.tasks; track task) {
+          <div class="task-card" cdkDrag>
+            <div class="task-header">
+              <h5 class="task-name">{{ task.title }}</h5>
+              <button mat-icon-button [matMenuTriggerFor]="menu" aria-label="Example icon-button with a menu">
+                <img src="https://img.icons8.com/?size=100&id=86374&format=png&color=000000" alt="">
+              </button>
+              <mat-menu #menu="matMenu">
+                <button mat-menu-item (click)="deleteTask(task.id)">
+                  <img src="https://img.icons8.com/?size=100&id=68064&format=png&color=000000" height="15" width="15" alt="">
+                  <span>Delete</span>
                 </button>
-                <mat-menu #menu="matMenu">
-                  <button mat-menu-item (click)="deleteTask(task.id)">
-                    <img src="https://img.icons8.com/?size=100&id=68064&format=png&color=000000" height="15" width="15" alt="">
-                    <span>Delete</span>
-                  </button>
-                </mat-menu>
-              </div>
-              <p class="task-description">{{ task.description }}</p>
+              </mat-menu>
             </div>
-          }
-          <button class="add-task-button" (click)="toggleCreateTaskForm(taskList)">+ Adicionar Tarefa</button>
-        </div>
+            <p class="task-description">{{ task.description }}</p>
+          </div>
+        }
+        <button class="add-task-button" (click)="toggleCreateTaskForm(taskList)">+ Adicionar Tarefa</button>
       </div>
+    </div>
+    <div class="create-list-container">
+      <button class="add-list-button" (click)="toggleCreateListForm()">+ Adicionar Lista</button>
     </div>
   </div>
 </div>
@@ -71,4 +86,48 @@
     <button (click)="toggleCreateTaskForm()" class="form-cancel-button">Cancelar</button>
   </div>
 </div>
-<button class="add-task-button" (click)="toggleCreateTaskForm()">+ Adicionar Tarefa</button>
+
+<div *ngIf="showCreateListForm" class="overlay" (click)="toggleCreateListForm()"></div>
+<div *ngIf="showCreateListForm" class="create-list-form">
+  <h3>Criar Nova Lista</h3>
+  <input
+    type="text"
+    placeholder="Nome da Lista"
+    [(ngModel)]="newListName"
+    class="form-input"
+  />
+  <div class="form-actions">
+    <button (click)="createTaskList()" class="form-submit-button">Criar</button>
+    <button (click)="toggleCreateListForm()" class="form-cancel-button">Cancelar</button>
+  </div>
+</div>
+
+<div *ngIf="showRenameListForm" class="overlay" (click)="toggleRenameListForm()"></div>
+<div *ngIf="showRenameListForm" class="create-list-form">
+  <h3>Renomear Lista</h3>
+  <input
+    type="text"
+    placeholder="Novo Nome da Lista"
+    [(ngModel)]="renameListName"
+    class="form-input"
+  />
+  <div class="form-actions">
+    <button (click)="renameTaskList()" class="form-submit-button">Salvar</button>
+    <button (click)="toggleRenameListForm()" class="form-cancel-button">Cancelar</button>
+  </div>
+</div>
+
+<div *ngIf="showRenameBoardForm" class="overlay" (click)="toggleRenameBoardForm()"></div>
+<div *ngIf="showRenameBoardForm" class="create-list-form">
+  <h3>Renomear Board</h3>
+  <input
+    type="text"
+    placeholder="Novo Nome do Board"
+    [(ngModel)]="renameBoardName"
+    class="form-input"
+  />
+  <div class="form-actions">
+    <button (click)="renameBoard()" class="form-submit-button">Salvar</button>
+    <button (click)="toggleRenameBoardForm()" class="form-cancel-button">Cancelar</button>
+  </div>
+</div>
