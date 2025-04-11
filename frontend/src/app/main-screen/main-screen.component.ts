@@ -75,32 +75,37 @@ export class MainScreenComponent {
   }
 
   loadTaskLists(): void {
-    this.boardId = this.router.snapshot.queryParams['boardId'];
-    this.taskListService.getAllTaskLists(this.boardId!).subscribe({
-      next: (data: Array<TaskList>) => {
-        this.taskLists = data.map(list => ({
-          ...list,
-          tasks: list.tasks ?? []
+    const boardId = this.router.snapshot.queryParams['boardId'];
+    if (!boardId) {
+      console.error('Board ID not found');
+      return;
+    }
+
+    this.taskListService.getAllTaskLists(boardId).subscribe({
+      next: (taskLists: TaskList[]) => {
+        this.taskLists = taskLists.map(taskList => ({
+          ...taskList,
+          tasks: taskList.tasks || []
         }));
 
-        for (const taskList of this.taskLists) {
+        this.taskLists.forEach(taskList => {
           this.taskListService.getTaskByTaskListId(taskList.id).subscribe({
-            next: (tasks: any) => {
+            next: (tasks: any[]) => {
               const listToUpdate = this.taskLists.find(list => list.id === taskList.id);
               if (listToUpdate) {
                 listToUpdate.tasks = tasks;
               }
             },
-            error: (err) => {
-              console.error('Erro ao carregar tarefas:', err);
+            error: (error) => {
+              console.error('Error loading tasks:', error);
             },
           });
-        }
+        });
 
-        this.connectedLists = this.taskLists.map(list => list.name);  
+        this.connectedLists = this.taskLists.map(list => list.name);
       },
-      error: (err) => {
-        console.error('Erro ao carregar listas:', err);
+      error: (error) => {
+        console.error('Error loading task lists:', error);
       }
     });
   }
