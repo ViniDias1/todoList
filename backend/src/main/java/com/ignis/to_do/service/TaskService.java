@@ -2,19 +2,14 @@ package com.ignis.to_do.service;
 
 import java.time.LocalDate;
 import java.time.ZoneId;
-import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
-
 import org.springframework.stereotype.Service;
-
 import com.ignis.to_do.dto.TaskDTO;
-import com.ignis.to_do.dto.TaskListDTO;
 import com.ignis.to_do.exception.task_exception.TaskNotFoundException;
 import com.ignis.to_do.model.Task;
 import com.ignis.to_do.model.TaskList;
 import com.ignis.to_do.repository.TaskRepository;
 import com.ignis.to_do.validator.StatusValidator;
-
 import jakarta.transaction.Transactional;
 
 @Service
@@ -35,7 +30,7 @@ public class TaskService implements TaskReminder {
         StatusValidator taskStatus = new StatusValidator(taskDTO.getStatus());
         if (taskStatus.validateStatus(taskDTO.getStatus())) {            
             TaskList taskList = taskListService.getList(taskDTO.getListId());        
-            Task task = new Task(taskDTO.getTitle(), taskList, taskDTO.getStatus(), taskDTO.getDescription());      
+            Task task = new Task(taskDTO.getTitle(), taskList, taskDTO.getDescription(), taskDTO.getStatus());      
             taskRepository.save(task);        
             return "Task criada com sucesso";
         }
@@ -63,7 +58,7 @@ public class TaskService implements TaskReminder {
     public Iterable<TaskDTO> getTasksByTaskListId(Long taskListId) {
         TaskList taskList = taskListService.getList(taskListId);
         return StreamSupport.stream(taskList.getTasks().spliterator(), false)
-            .map(task -> new TaskDTO(task.getId(), task.getTitle(), task.getDescription(), task.getStatus(), task.getList().getId()))
+            .map(task -> new TaskDTO(task.getId(), task.getTitle(),  task.getStatus(), task.getDescription(), task.getList().getId()))
             .toList();
     }
     public void deleteTaskById(Long taskId) { 
