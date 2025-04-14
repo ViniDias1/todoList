@@ -30,7 +30,7 @@ public class TaskService implements TaskReminder {
         StatusValidator taskStatus = new StatusValidator(taskDTO.getStatus());
         if (taskStatus.validateStatus(taskDTO.getStatus())) {            
             TaskList taskList = taskListService.getList(taskDTO.getListId());        
-            Task task = new Task(taskDTO.getTitle(), taskList, taskDTO.getDescription(), taskDTO.getStatus());      
+            Task task = new Task(taskDTO.getTitle(), taskList, taskDTO.getDescription(), taskDTO.getStatus(), taskDTO.getDueDate());      
             taskRepository.save(task);        
             return "Task criada com sucesso";
         }
@@ -41,7 +41,7 @@ public class TaskService implements TaskReminder {
     public TaskDTO getTaskById(Long taskId) {  
         Task task = taskRepository.findById(taskId).orElseThrow(()
          -> new TaskNotFoundException(TASK_NOT_FOUND.formatted(taskId))); 
-        return new TaskDTO(task.getId(), task.getTitle(), task.getDescription(), task.getStatus(), task.getList().getId()); 
+        return new TaskDTO(task.getId(), task.getTitle(), task.getDescription(), task.getStatus(), task.getDueDate(), task.getList().getId()); 
     }
 
     public void verifyIfTaskExists(Long taskId) {
@@ -51,14 +51,14 @@ public class TaskService implements TaskReminder {
 
     public Iterable<TaskDTO> getAllTasks() {
         return taskRepository.findAll().stream()
-            .map(task -> new TaskDTO(task.getId(), task.getTitle(), task.getDescription(), task.getStatus(), task.getList().getId()))
+            .map(task -> new TaskDTO(task.getId(), task.getTitle(), task.getDescription(), task.getStatus(), task.getDueDate(), task.getList().getId()))
             .toList();
     }
     
     public Iterable<TaskDTO> getTasksByTaskListId(Long taskListId) {
         TaskList taskList = taskListService.getList(taskListId);
         return StreamSupport.stream(taskList.getTasks().spliterator(), false)
-            .map(task -> new TaskDTO(task.getId(), task.getTitle(),  task.getStatus(), task.getDescription(), task.getList().getId()))
+            .map(task -> new TaskDTO(task.getId(), task.getTitle(),  task.getStatus(), task.getDescription(), task.getDueDate(), task.getList().getId()))
             .toList();
     }
     public void deleteTaskById(Long taskId) { 
