@@ -1,20 +1,24 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, inject} from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { RouterModule } from '@angular/router';
+import { RouterModule,Router } from '@angular/router';
 import { BoardService } from '../services/board.service';
 import { AuthInterceptor } from '../interceptors/auth.interceptor';
+import {MatMenuModule} from '@angular/material/menu';
+import {MatButtonModule} from '@angular/material/button';
+import {MatSidenavModule} from '@angular/material/sidenav';
 
 interface Board {
   id: string;
   ownerId: string;
   title: string;
+  description?: string;
 }
 
 @Component({
   selector: 'app-boards',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterModule],
+  imports: [CommonModule, FormsModule, RouterModule, MatButtonModule, MatMenuModule, MatSidenavModule],
   providers: [
     {
       provide: 'HTTP_INTERCEPTORS',
@@ -26,9 +30,14 @@ interface Board {
   styleUrls: ['./boards.component.css']
 })
 export class BoardsComponent implements OnInit {
+  showFiller = false;
   boards: Array<Board> = [];
+  showCreateForm: boolean = false;
+  newBoardTitle: string = '';
+  newBoardDescription: string = '';
 
-  constructor(private readonly boardService: BoardService) {}
+  private readonly boardService=inject(BoardService);
+  private readonly router=inject(Router);
 
   ngOnInit(): void {
     this.loadBoards();
@@ -47,16 +56,60 @@ export class BoardsComponent implements OnInit {
 
   }
 
-  addBoard() {
-    const newBoard: Board = {
-      id: Date.now().toString(),
-      ownerId: '1', // Exemplo de valor fixo
-      title: `New Board ${this.boards.length + 1}`
-    };
-    this.boards.push(newBoard);
+  deleteBoard(id: string) {
+    this.boardService.deleteBoard(id).subscribe({
+      next: () => {
+        console.log('Board deleted successfully');
+      },
+      error: (err) => {
+        console.error('Failed to delete board:', err);
+      }
+    })
+
+    this.boards = this.boards.filter(board => board.id !== id);
+    window.location.reload();
+
+    console.log('Board deleted:', id);
   }
 
-  deleteBoard(id: string) {
-    this.boards = this.boards.filter(board => board.id !== id);
+  toggleCreateForm(): void {
+    this.showCreateForm = !this.showCreateForm;
+    this.newBoardTitle = '';
+    this.newBoardDescription = '';
+  }
+
+  createBoard(): void {
+    const ownerId = this.boardService.getOwnerId();
+    if (!this.newBoardTitle.trim()) {
+      alert('O título é obrigatório!');
+      return;
+    }
+
+    const newBoard: Board = {
+      id: "",
+      ownerId: ownerId ?? '',
+      title: this.newBoardTitle,
+      description: this.newBoardDescription
+    };
+
+    this.boards.push(newBoard);
+    this.boardService.createBoard(newBoard).subscribe({
+      next: (data: Board) => {
+        console.log('Board created:', data);
+      },
+      error: (err) => {
+        console.error('Failed to create board:', err);
+      }
+    })
+    
+    this.toggleCreateForm();
+    window.location.reload();
+
+  }
+
+  goToBoard(board: Board) : void { 
+    this.router.navigate(['/main'], { queryParams: { boardId: board.id } });
+
   }
 }
+
