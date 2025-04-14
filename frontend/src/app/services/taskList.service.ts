@@ -64,6 +64,16 @@ export class TaskListService {
     });
   }
 
+  updateTaskTitle(taskId: string, newTitle: string): Observable<Task> {
+    return this.http.put<Task>(`${this.taskUrl}/updateTaskTitle`, { id: taskId, title: newTitle });
+  }
+  updateTaskDescription(taskId: string, newDescription: string): Observable<Task> {
+    return this.http.put<Task>(`${this.taskUrl}/updateTaskDescription`, { id: taskId, description: newDescription });
+  }
+  updateTaskStatus(taskId: string, newStatus: string): Observable<Task> {
+    return this.http.put<Task>(`${this.taskUrl}/updateTaskStatus`, { id: taskId, status: newStatus });
+  }
+
   getToken(): string | null {
     return localStorage.getItem('jwtToken');
   }
