@@ -30,6 +30,7 @@ export class LoginComponent {
   });
 
   onLogin() {
+    this.loginService.clearLocalStorage();
     const formValues = this.loginForm.value;
     console.log('Valores do formulário:', formValues);
 
