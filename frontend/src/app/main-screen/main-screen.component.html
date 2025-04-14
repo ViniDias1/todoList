@@ -41,18 +41,12 @@
         (cdkDropListDropped)="drop($event)"
       >
         @for (task of taskList.tasks; track task) {
-          <div class="task-card" cdkDrag>
+          <div class="task-card" cdkDrag (click)="toggleEditTaskForm(task)">
             <div class="task-header">
               <h5 class="task-name">{{ task.title }}</h5>
-              <button mat-icon-button [matMenuTriggerFor]="menu" aria-label="Options">
-                <img src="https://img.icons8.com/?size=100&id=47978&format=png&color=000000" alt="">
-              </button>
-              <mat-menu #menu="matMenu">
-                <button mat-menu-item (click)="deleteTask(task.id)">
+                <button class='deleteTaskButton' (click)="deleteTask(task.id); $event.stopPropagation()">
                   <img src="https://img.icons8.com/?size=100&id=68064&format=png&color=000000" height="15" width="15" alt="">
-                  <span>Delete</span>
                 </button>
-              </mat-menu>
             </div>
             <p class="task-description">{{ task.description }}</p>
           </div>
@@ -73,6 +67,12 @@
     type="text"
     placeholder="Título da Tarefa"
     [(ngModel)]="newTaskTitle"
+    class="form-input"
+  />
+  <input
+    type="date"
+    placeholder="Vencimento"
+    [(ngModel)]="newTaskDueDate"
     class="form-input"
   />
   <textarea
@@ -128,5 +128,33 @@
   <div class="form-actions">
     <button (click)="renameBoard()" class="form-submit-button">Salvar</button>
     <button (click)="toggleRenameBoardForm()" class="form-cancel-button">Cancelar</button>
+  </div>
+</div>
+
+<div *ngIf="showEditTaskForm" class="overlay" (click)="toggleEditTaskForm()"></div>
+<div *ngIf="showEditTaskForm && editTask" class="edit-task-form">
+  <h3>Editar Tarefa</h3>
+  <input
+    type="text"
+    placeholder="Título da Tarefa"
+    [(ngModel)]="editTask.title"
+    class="form-input"
+  />
+  <textarea
+    placeholder="Descrição"
+    [(ngModel)]="editTask.description"
+    class="form-textarea"
+  ></textarea>
+  <select [(ngModel)]="selectedCategory" class="form-select">
+    <option *ngFor="let category of categories" [value]="category">{{ category }}</option>
+  </select>
+  <input
+    type="date"
+    [(ngModel)]="dueDate"
+    class="form-input"
+  />
+  <div class="form-actions">
+    <button (click)="saveTaskChanges()" class="form-submit-button">Salvar</button>
+    <button (click)="toggleEditTaskForm()" class="form-cancel-button">Cancelar</button>
   </div>
 </div>

@@ -16,10 +16,12 @@ interface TaskList {
 }
 
 interface Task {
+  id: string; // Add the id property
   title: string;
   status: string;
   description?: string;
   listId: string;
+  dueDate?: string;
 }
 
 
@@ -40,6 +42,7 @@ export class MainScreenComponent {
   showCreateTaskForm: boolean = false;
   newTaskTitle: string = '';
   newTaskDescription: string = '';
+  newTaskDueDate: string = '';
   selectedList: TaskList | null = null;
 
   showCreateListForm: boolean = false;
@@ -51,6 +54,12 @@ export class MainScreenComponent {
 
   showRenameBoardForm: boolean = false;
   renameBoardName: string = '';
+
+  showEditTaskForm: boolean = false;
+  editTask: Task | null = null;
+  categories: string[] = ['Work', 'Personal', 'Urgent'];
+  selectedCategory: string = '';
+  dueDate: string = '';
 
   private readonly router = inject(ActivatedRoute);
   private readonly taskListService = inject(TaskListService);  
@@ -159,6 +168,7 @@ export class MainScreenComponent {
     this.showCreateTaskForm = !this.showCreateTaskForm;
     this.newTaskTitle = '';
     this.newTaskDescription = '';
+    this.newTaskDueDate = '';
     this.selectedList = list || null;
   }
 
@@ -177,11 +187,14 @@ export class MainScreenComponent {
       alert('O título é obrigatório!');
       return;
     }
+
     const newTask: Task = {
+      id: '',
       title: this.newTaskTitle,
       status: 'PENDING',
       description: this.newTaskDescription,
-      listId: list.id
+      listId: list.id,
+      dueDate: this.newTaskDueDate // Include due date
     };
 
     this.taskListService.addTask(newTask).subscribe({
@@ -294,6 +307,37 @@ export class MainScreenComponent {
     window.location.reload();
 
     
+  }
+
+  toggleEditTaskForm(task?: Task): void {
+    this.showEditTaskForm = !this.showEditTaskForm;
+    if (task) {
+      this.editTask = { ...task };
+      this.selectedCategory = task.status || '';
+      this.dueDate = ''; // Set to task's due date if available
+    } else {
+      this.editTask = null;
+      this.selectedCategory = '';
+      this.dueDate = '';
+    }
+  }
+
+  saveTaskChanges(): void {
+    if (this.editTask) {
+      // debugger;
+      this.editTask.status = this.selectedCategory;
+      // Add dueDate to the task object if needed
+      this.taskListService.updateTaskTitle(this.editTask.id, this.editTask.title).subscribe({
+        next: () => {
+          console.log('Task updated successfully.');
+          this.loadTaskLists();
+        },
+        error: (err) => {
+          console.error('Failed to update task:', err);
+        }
+      });
+      this.toggleEditTaskForm();
+    }
   }
 
   trackByTaskListId(index: number, taskList: TaskList): string {
